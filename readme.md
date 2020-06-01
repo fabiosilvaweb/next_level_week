@@ -1,6 +1,6 @@
-<div style="text-align:center">
+<center style="text-align:center">
   <img src="assets/img/nlw.svg" alt="Next level week @Rocketseat" />
-</div>
+</center>
 
 ### Semana Next level Week
 
