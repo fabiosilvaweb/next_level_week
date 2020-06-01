@@ -8,6 +8,6 @@ O NLW é uma semana prática com muito código, desafios, networking e um ú
 
 #### Estrutura de pastas da aplicação
 
-** Back-end: ** server
-** Front-end: ** web
-** Modile: ** mobile
+- **Back-end:** server
+- **Front-end:** web
+- **Modile:** mobile
