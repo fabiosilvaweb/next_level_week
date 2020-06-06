@@ -14,4 +14,4 @@ O NLW é uma semana prática com muito código, desafios, networking e um ú
 
 
 #### License
-MIT © fabio silva
+MIT © Fabio silva
