@@ -3,16 +3,56 @@ import { Feather as Icon } from "@expo/vector-icons";
 import { View, ImageBackground, StyleSheet, Image, Text, TextInput, KeyboardAvoidingView, Platform } from 'react-native';
 import { RectButton } from 'react-native-gesture-handler';
 import { useNavigation } from '@react-navigation/native';
+import axios from "axios";
+
+import RNPickerSelect from 'react-native-picker-select';
+
+interface IBGEResponse {
+  sigla: string,
+  nome: string
+}
+interface select {
+  value: string,
+  label: string
+}
+
+interface select {
+  value: string,
+  label: string
+}
+
+interface IBGECityResponse {
+  nome: string
+}
 
 const Home = () => {
+  const [itemsUf, setItemsUf] = useState<select[]>([]);
+  const [itemsCities, setItemsCities] = useState<select[]>([]);
   const [uf, setUf] = useState("");
   const [city, setCity] = useState("");
 
-  useEffect(() => {
+  const navigation = useNavigation();
 
+  useEffect(() => {
+    axios.get<IBGEResponse[]>('https://servicodados.ibge.gov.br/api/v1/localidades/estados').then(response => {
+      const ufInitials = response.data.map(uf => ({ value: uf.sigla, label: uf.nome }));
+
+      setItemsUf(ufInitials);
+    })
   }, [])
 
-  const navigation = useNavigation();
+  useEffect(() => {
+    if (uf === '0') {
+      return;
+    }
+
+    axios.get<IBGECityResponse[]>(`https://servicodados.ibge.gov.br/api/v1/localidades/estados/${uf}/municipios`).then(response => {
+      const cityNames = response.data.map(uf => ({ label: uf.nome, value: uf.nome }));
+
+      setItemsCities(cityNames);
+    })
+
+  }, [uf])
 
   function handleNavigationToPoins() {
     navigation.navigate('Points', {
@@ -36,21 +76,25 @@ const Home = () => {
         </View>
 
         <View style={styles.footer}>
-          <TextInput
-            style={styles.input}
-            placeholder="Selecione a UF"
-            value={uf}
-            maxLength={2}
-            autoCapitalize="characters"
-            autoCorrect={false}
-            onChangeText={setUf}
+          <RNPickerSelect
+            style={pickerSelectStyles}
+            onValueChange={(value) => setUf(value)}
+            placeholder={{ label: 'Selecione a UF', value: null, color: "#888" }}
+            items={itemsUf}
+            useNativeAndroidPickerStyle={false}
+            Icon={() => {
+              return <Icon name="chevron-down" size={20} color="#d6d6d6" />;
+            }}
           />
-          <TextInput
-            style={styles.input}
-            placeholder="Selecione a cidade"
-            value={city}
-            autoCorrect={false}
-            onChangeText={setCity}
+          <RNPickerSelect
+            style={pickerSelectStyles}
+            onValueChange={(value) => setCity(value)}
+            placeholder={{ label: 'Selecione a cidade', value: null, color: "#888" }}
+            items={itemsCities}
+            useNativeAndroidPickerStyle={false}
+            Icon={() => {
+              return <Icon name="chevron-down" size={20} color="#d6d6d6" />;
+            }}
           />
 
           <RectButton style={styles.button} onPress={handleNavigationToPoins}>
@@ -68,6 +112,36 @@ const Home = () => {
     </KeyboardAvoidingView>
   )
 }
+
+const pickerSelectStyles = StyleSheet.create({
+  inputIOS: {
+    height: 60,
+    backgroundColor: '#FFF',
+    borderRadius: 10,
+    marginBottom: 8,
+    paddingHorizontal: 24,
+    fontSize: 16,
+    paddingVertical: 8,
+    paddingRight: 30,
+    color: "#888",
+  },
+  inputAndroid: {
+    height: 60,
+    backgroundColor: '#FFF',
+    borderRadius: 10,
+    marginBottom: 8,
+    paddingHorizontal: 24,
+    fontSize: 16,
+    paddingVertical: 8,
+    paddingRight: 30,
+    color: "#888",
+  },
+  iconContainer: {
+    top: 20,
+    right: 15,
+  },
+});
+
 
 const styles = StyleSheet.create({
   container: {
